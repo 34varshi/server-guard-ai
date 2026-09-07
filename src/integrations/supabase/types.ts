@@ -14,7 +14,184 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          metric: string
+          previous_value: number | null
+          recommendation: string
+          resolved_at: string | null
+          risk_score: number
+          server_id: string
+          severity: string
+          status: string
+          threshold: number
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          metric: string
+          previous_value?: number | null
+          recommendation: string
+          resolved_at?: string | null
+          risk_score?: number
+          server_id: string
+          severity: string
+          status?: string
+          threshold: number
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          metric?: string
+          previous_value?: number | null
+          recommendation?: string
+          resolved_at?: string | null
+          risk_score?: number
+          server_id?: string
+          severity?: string
+          status?: string
+          threshold?: number
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metrics: {
+        Row: {
+          cpu_usage: number
+          created_at: string
+          disk_usage: number
+          id: string
+          memory_usage: number
+          network_in_mb: number
+          network_out_mb: number
+          process_count: number
+          recorded_at: string
+          server_id: string
+          uptime_seconds: number
+        }
+        Insert: {
+          cpu_usage: number
+          created_at?: string
+          disk_usage: number
+          id?: string
+          memory_usage: number
+          network_in_mb?: number
+          network_out_mb?: number
+          process_count?: number
+          recorded_at?: string
+          server_id: string
+          uptime_seconds?: number
+        }
+        Update: {
+          cpu_usage?: number
+          created_at?: string
+          disk_usage?: number
+          id?: string
+          memory_usage?: number
+          network_in_mb?: number
+          network_out_mb?: number
+          process_count?: number
+          recorded_at?: string
+          server_id?: string
+          uptime_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metrics_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      servers: {
+        Row: {
+          created_at: string
+          demo_mode: boolean
+          description: string | null
+          environment: string
+          hostname: string
+          id: string
+          ip_address: string | null
+          last_seen: string
+          name: string
+          operating_system: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          demo_mode?: boolean
+          description?: string | null
+          environment?: string
+          hostname: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string
+          name: string
+          operating_system: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          demo_mode?: boolean
+          description?: string | null
+          environment?: string
+          hostname?: string
+          id?: string
+          ip_address?: string | null
+          last_seen?: string
+          name?: string
+          operating_system?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      thresholds: {
+        Row: {
+          created_at: string
+          critical_value: number
+          id: string
+          metric: string
+          updated_at: string
+          warning_value: number
+        }
+        Insert: {
+          created_at?: string
+          critical_value: number
+          id?: string
+          metric: string
+          updated_at?: string
+          warning_value: number
+        }
+        Update: {
+          created_at?: string
+          critical_value?: number
+          id?: string
+          metric?: string
+          updated_at?: string
+          warning_value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
