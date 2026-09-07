@@ -1,0 +1,49 @@
+import { Link } from "@tanstack/react-router";
+import { Bell, BookOpen, ChartNoAxesCombined, ChevronRight, CircleGauge, FileBarChart, GitBranch, Menu, MonitorCog, Search, Server, Settings, ShieldCheck, SlidersHorizontal, Table2, X } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { relativeTime, type ServerWithMetric } from "@/lib/server-shield";
+
+const navSections = [
+  { label: "Operate", items: [{ label: "System Map", to: "/", icon: GitBranch }, { label: "Servers", to: "/servers", icon: Server }, { label: "Metrics", to: "/metrics", icon: Table2 }, { label: "Alerts", to: "/alerts", icon: Bell }] },
+  { label: "Understand", items: [{ label: "Analytics", to: "/analytics", icon: ChartNoAxesCombined }, { label: "Reports", to: "/reports", icon: FileBarChart }, { label: "Documentation", to: "/documentation", icon: BookOpen }, { label: "Settings", to: "/settings", icon: Settings }] },
+] as const;
+
+export function AppShell({ children, title, subtitle = "Monitor. Detect. Understand. Act.", alertCount = 0 }: { children: ReactNode; title: string; subtitle?: string; alertCount?: number }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  return (
+    <div className="min-h-screen bg-void text-ink antialiased">
+      <div className="flex min-h-screen">
+        <aside className={cn("fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-line bg-panel/95 backdrop-blur-md transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0", mobileOpen && "translate-x-0")}>
+          <div className="flex items-center justify-between px-5 pb-4 pt-5">
+            <Link to="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
+              <span className="grid size-9 place-items-center rounded-lg bg-ibm/15 ring-1 ring-ibm/30"><span className="size-2.5 rounded-[3px] bg-cyan dot-pulse" /></span>
+              <span className="leading-tight"><span className="block text-[13px] font-bold tracking-tight">ServerShield <span className="text-ibm">AI</span></span><span className="block text-[10px] font-mono text-faint">v2.0 · Console</span></span>
+            </Link>
+            <Button className="lg:hidden" size="icon" variant="ghost" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></Button>
+          </div>
+          <nav className="flex-1 space-y-5 px-3 py-3 text-[13px]">
+            {navSections.map((section) => <div key={section.label} className="space-y-1"><span className="px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.18em] text-faint">{section.label}</span>{section.items.map((item) => { const Icon = item.icon; return <Link key={item.to} to={item.to} activeOptions={{ exact: item.to === "/" }} activeProps={{ className: "bg-ibm/15 text-ink ring-1 ring-ibm/25" }} className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-dim transition-colors hover:bg-accent hover:text-ink" onClick={() => setMobileOpen(false)}><Icon className="size-4" /><span>{item.label}</span>{item.label === "Alerts" && alertCount > 0 ? <span className="ml-auto rounded bg-bad/15 px-1.5 py-0.5 text-[10px] font-mono text-bad">{alertCount}</span> : null}</Link>; })}</div>)}
+          </nav>
+          <div className="border-t border-line p-3">
+            <div className="rounded-lg bg-panel-2/80 p-3 ring-1 ring-line"><div className="flex items-center justify-between"><span className="text-[10px] font-mono uppercase tracking-[0.15em] text-faint">Mode</span><span className="flex items-center gap-1.5 text-[10px] font-mono text-warn"><span className="size-1.5 rounded-full bg-warn dot-pulse" />DEMO</span></div><div className="mt-2 h-1 overflow-hidden rounded-full bg-line"><div className="h-full w-2/3 bg-ibm" /></div><p className="mt-2 text-[10px] font-mono text-faint">Agent · 5 nodes online</p></div>
+            <div className="mt-3 flex items-center gap-2.5 px-1"><span className="grid size-8 place-items-center rounded-full bg-violet/20 text-[11px] font-bold text-violet ring-1 ring-violet/30">TS</span><span className="leading-tight"><span className="block text-[12px] font-semibold">TechSentinels</span><span className="block text-[10px] text-faint">IARE · Operator</span></span></div>
+          </div>
+        </aside>
+        {mobileOpen ? <button className="fixed inset-0 z-30 bg-void/80 lg:hidden" aria-label="Close menu" onClick={() => setMobileOpen(false)} /> : null}
+        <main className="min-w-0 flex-1">
+          <header className="sticky top-0 z-20 border-b border-line bg-void/90 backdrop-blur-md"><div className="flex items-center gap-3 px-4 py-3 sm:px-6"><Button className="lg:hidden" variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu /></Button><div className="leading-tight"><h1 className="text-[17px] font-bold tracking-tight sm:text-[19px]">{title}</h1><p className="text-[11px] text-dim">{subtitle}</p></div><div className="ml-auto flex items-center gap-2"><div className="hidden h-9 items-center gap-2 rounded-lg bg-panel-2/70 px-3 text-dim ring-1 ring-line md:flex"><Search className="size-3.5" /><span className="text-[12px]">Search servers, alerts, metrics</span><span className="text-[10px] font-mono text-faint">⌘K</span></div><div className="hidden items-center gap-2 rounded-lg bg-good/10 px-3 py-2 ring-1 ring-good/25 sm:flex"><span className="size-1.5 rounded-full bg-good dot-pulse" /><span className="text-[11px] font-semibold text-good">GO · 3/5 nominal</span></div><Button size="sm" className="bg-ibm text-primary-foreground hover:bg-cyan hover:text-void" onClick={() => window.location.reload()}><CircleGauge />Refresh</Button></div></div></header>
+          <div className="data-grid min-h-[calc(100vh-65px)] p-4 sm:p-6">{children}<footer className="mt-8 flex flex-col gap-2 border-t border-line px-1 py-4 text-[11px] text-faint sm:flex-row sm:items-center sm:justify-between"><span><strong className="text-dim">ServerShield AI</strong> · IBM SkillsBuild Hackathon 2026</span><span className="font-mono">TechSentinels · Live demo data</span></footer></div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export function Panel({ children, className }: { children: ReactNode; className?: string }) { return <section className={cn("glass-panel rounded-2xl p-5", className)}>{children}</section>; }
+export function SectionHeading({ title, detail, action }: { title: string; detail?: string; action?: ReactNode }) { return <div className="mb-4 flex items-start justify-between gap-3"><div><h2 className="text-[15px] font-bold tracking-tight">{title}</h2>{detail ? <p className="mt-1 text-[11px] text-dim">{detail}</p> : null}</div>{action}</div>; }
+export function StatusBadge({ status }: { status: string }) { const tone = status === "HEALTHY" ? "bg-good/10 text-good ring-good/25" : status === "WARNING" ? "bg-warn/10 text-warn ring-warn/25" : status === "CRITICAL" ? "bg-bad/10 text-bad ring-bad/30" : "bg-off/10 text-off ring-off/25"; return <span className={cn("inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ring-1", tone)}><span className={cn("size-1.5 rounded-full", status === "HEALTHY" ? "bg-good" : status === "WARNING" ? "bg-warn dot-pulse" : status === "CRITICAL" ? "bg-bad dot-pulse" : "bg-off")} />{status}</span>; }
+export function StatCard({ label, value, detail, tone = "text-ink" }: { label: string; value: string | number; detail: string; tone?: string }) { return <div className="glass-panel rounded-xl p-3.5"><div className="flex items-center justify-between"><p className="text-[10px] font-mono uppercase tracking-[0.15em] text-faint">{label}</p><span className={cn("size-1.5 rounded-full", tone.replace("text-", "bg-"))} /></div><p className={cn("mt-1.5 text-[26px] font-extrabold tracking-tight leading-none", tone)}>{value}</p><p className="mt-1.5 text-[11px] text-dim">{detail}</p></div>; }
+export function MetricBar({ label, value, tone = "bg-ibm" }: { label: string; value: number; tone?: string }) { return <div><div className="mb-1 flex justify-between text-[10px] font-mono text-dim"><span>{label}</span><span className="text-ink">{Math.round(value)}%</span></div><div className="h-1.5 overflow-hidden rounded-full bg-line"><div className={cn("h-full rounded-full transition-all", tone)} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} /></div></div>; }
+export function ServerRow({ server, onClick }: { server: ServerWithMetric; onClick?: () => void }) { return <button className="group grid w-full gap-3 border-b border-line/70 px-4 py-3 text-left transition-colors last:border-0 hover:bg-accent/50 sm:grid-cols-[1.6fr_0.75fr_0.45fr_0.45fr_0.45fr_0.75fr] sm:items-center" onClick={onClick}><div className="min-w-0"><p className="truncate text-sm font-semibold">{server.name}</p><p className="truncate text-[11px] font-mono text-faint">{server.hostname} · {server.ip_address} · {server.operating_system}</p></div><div><StatusBadge status={server.status} /></div><span className="text-xs font-mono text-dim">CPU {Math.round(server.latestMetric?.cpu_usage ?? 0)}%</span><span className="text-xs font-mono text-dim">Mem {Math.round(server.latestMetric?.memory_usage ?? 0)}%</span><span className="text-xs font-mono text-dim">Disk {Math.round(server.latestMetric?.disk_usage ?? 0)}%</span><span className="flex items-center justify-between text-[11px] font-mono text-faint">{relativeTime(server.last_seen)}<ChevronRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" /></span></button>; }
