@@ -140,7 +140,7 @@ export function useServerShieldData() {
       setMetrics((current) => current.map((item, index) => ({
         ...item,
         cpu_usage: Math.min(99, Math.max(10, Number(item.cpu_usage) + ((index % 3) - 1) * 2)),
-        memory_usage: Math.min(98, Math.max(20, Number(item.memory_usage) + (index % 2 ? 1 : -1)),
+        memory_usage: Math.min(98, Math.max(20, Number(item.memory_usage) + (index % 2 ? 1 : -1))),
         disk_usage: Math.min(98, Math.max(20, Number(item.disk_usage) + (index % 4 === 0 ? 0.2 : 0))),
         recorded_at: new Date().toISOString(),
       })));
