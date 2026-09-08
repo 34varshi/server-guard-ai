@@ -1,6 +1,7 @@
 export function downloadCsv(filename: string, rows: Array<Record<string, string | number | null>>) {
-  if (!rows.length) return;
-  const headers = Object.keys(rows[0]);
+  const first = rows[0];
+  if (!first) return;
+  const headers = Object.keys(first);
   const csv = [headers.join(","), ...rows.map((row) => headers.map((header) => {
     const value = String(row[header] ?? "").replaceAll('"', '""');
     return `"${value}"`;
