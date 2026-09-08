@@ -19,7 +19,7 @@ const serverIds = [
 
 const now = Date.now();
 const fallbackServer = (index: number, values: Partial<Server>): Server => ({
-  id: serverIds[index],
+  id: serverIds[index] ?? serverIds[0],
   name: values.name ?? "Server",
   hostname: values.hostname ?? "node-01",
   ip_address: values.ip_address ?? "10.0.4.12",
