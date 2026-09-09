@@ -11,7 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as DocumentationRouteImport } from './routes/documentation'
+import { Route as MetricsRouteImport } from './routes/metrics'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ServersRouteImport } from './routes/servers'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ServersServerIdRouteImport } from './routes/servers.$serverId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,9 +29,34 @@ const AlertsRoute = AlertsRouteImport.update({
   path: '/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentationRoute = DocumentationRouteImport.update({
+  id: '/documentation',
+  path: '/documentation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetricsRoute = MetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServersRoute = ServersRouteImport.update({
   id: '/servers',
   path: '/servers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServersServerIdRoute = ServersServerIdRouteImport.update({
@@ -38,34 +68,82 @@ const ServersServerIdRoute = ServersServerIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/documentation': typeof DocumentationRoute
+  '/metrics': typeof MetricsRoute
+  '/reports': typeof ReportsRoute
   '/servers': typeof ServersRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/documentation': typeof DocumentationRoute
+  '/metrics': typeof MetricsRoute
+  '/reports': typeof ReportsRoute
   '/servers': typeof ServersRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/documentation': typeof DocumentationRoute
+  '/metrics': typeof MetricsRoute
+  '/reports': typeof ReportsRoute
   '/servers': typeof ServersRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/servers/$serverId': typeof ServersServerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/alerts' | '/servers' | '/servers/$serverId'
+  fullPaths:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/documentation'
+    | '/metrics'
+    | '/reports'
+    | '/servers'
+    | '/settings'
+    | '/servers/$serverId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alerts' | '/servers' | '/servers/$serverId'
-  id: '__root__' | '/' | '/alerts' | '/servers' | '/servers/$serverId'
+  to:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/documentation'
+    | '/metrics'
+    | '/reports'
+    | '/servers'
+    | '/settings'
+    | '/servers/$serverId'
+  id:
+    | '__root__'
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/documentation'
+    | '/metrics'
+    | '/reports'
+    | '/servers'
+    | '/settings'
+    | '/servers/$serverId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  DocumentationRoute: typeof DocumentationRoute
+  MetricsRoute: typeof MetricsRoute
+  ReportsRoute: typeof ReportsRoute
   ServersRoute: typeof ServersRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -84,11 +162,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documentation': {
+      id: '/documentation'
+      path: '/documentation'
+      fullPath: '/documentation'
+      preLoaderRoute: typeof DocumentationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metrics': {
+      id: '/metrics'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof MetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/servers': {
       id: '/servers'
       path: '/servers'
       fullPath: '/servers'
       preLoaderRoute: typeof ServersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/servers/$serverId': {
@@ -115,7 +228,12 @@ const ServersRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  DocumentationRoute: DocumentationRoute,
+  MetricsRoute: MetricsRoute,
+  ReportsRoute: ReportsRoute,
   ServersRoute: ServersRouteWithChildren,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

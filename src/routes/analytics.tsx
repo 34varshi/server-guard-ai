@@ -1,0 +1,25 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { BrainCircuit, ChartNoAxesCombined, CircleAlert, Gauge } from "lucide-react";
+import { useMemo } from "react";
+import { AppShell, MetricBar, Panel, SectionHeading, StatCard, StatusBadge } from "@/components/server-shield";
+import { healthForMetric, useServerShieldData } from "@/lib/server-shield";
+
+export const Route = createFileRoute("/analytics")({
+  head: () => ({ meta: [
+    { title: "Analytics · ServerShield AI" },
+    { name: "description", content: "Explore data-driven fleet health analytics and AI-assisted risk insights." },
+    { property: "og:title", content: "Analytics · ServerShield AI" },
+    { property: "og:description", content: "Understand fleet posture, resource pressure, and prioritized operational insights." },
+  ] }),
+  component: AnalyticsPage,
+});
+
+function AnalyticsPage() {
+  const data = useServerShieldData();
+  const openAlerts = data.alerts.filter((alert) => alert.status !== "RESOLVED");
+  const averages = useMemo(() => ["CPU", "MEMORY", "DISK"].map((name) => { const values = data.serverRows.map((server) => name === "CPU" ? server.latestMetric?.cpu_usage ?? 0 : name === "MEMORY" ? server.latestMetric?.memory_usage ?? 0 : server.latestMetric?.disk_usage ?? 0); return { name, value: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0 }; }), [data.serverRows]);
+  const criticalCount = data.serverRows.filter((server) => healthForMetric(server.latestMetric, data.thresholds) === "CRITICAL").length;
+  const pressure = averages.reduce((sum, item) => sum + item.value, 0) / Math.max(1, averages.length);
+
+  return <AppShell title="Analytics" subtitle="Fleet intelligence · posture trends · prioritized insights" alertCount={openAlerts.length}><div className="rise-in space-y-5"><div><p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan">Understand / intelligence</p><h2 className="mt-1 text-2xl font-extrabold tracking-tight">What the fleet is telling us</h2><p className="mt-2 max-w-2xl text-sm text-dim">Data-driven summaries turn raw telemetry into a concise view of operational pressure and risk.</p></div><div className="grid gap-3 sm:grid-cols-3"><StatCard label="Fleet pressure" value={`${Math.round(pressure)}%`} detail="Average across core resources" tone={pressure >= 75 ? "text-warn" : "text-good"} /><StatCard label="Open signals" value={openAlerts.length} detail="Alerts awaiting resolution" tone={openAlerts.length ? "text-warn" : "text-good"} /><StatCard label="Critical nodes" value={criticalCount} detail="Immediate review recommended" tone={criticalCount ? "text-bad" : "text-good"} /></div><div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><Panel><SectionHeading title="Resource distribution" detail="Current average across monitored nodes" /><div className="space-y-5">{averages.map((item) => <MetricBar key={item.name} label={item.name} value={item.value} tone={item.value >= 85 ? "bg-bad" : item.value >= 70 ? "bg-warn" : "bg-ibm"} />)}</div><div className="mt-6 grid grid-cols-3 gap-2 text-center text-[10px] font-mono text-faint"><span>LOW<br /><strong className="text-good">0–69%</strong></span><span>WATCH<br /><strong className="text-warn">70–84%</strong></span><span>HIGH<br /><strong className="text-bad">85%+</strong></span></div></Panel><Panel><SectionHeading title="Key insights" detail="Generated from current demo telemetry" /><div className="space-y-4 text-xs text-dim"><p className="flex gap-3"><Gauge className="size-4 shrink-0 text-warn" />Database memory pressure is the leading sustained resource signal.</p><p className="flex gap-3"><CircleAlert className="size-4 shrink-0 text-bad" />{criticalCount ? `${criticalCount} node${criticalCount === 1 ? " is" : "s are"} above the critical posture threshold.` : "No nodes are currently above the critical posture threshold."}</p><p className="flex gap-3"><BrainCircuit className="size-4 shrink-0 text-cyan" />AI-assisted risk scores prioritize impact and trend; they are not a live ML prediction.</p></div></Panel></div><Panel><SectionHeading title="Posture by server" detail="Compare health classification with latest readings" /><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{data.serverRows.map((server) => <div key={server.id} className="rounded-lg border border-line bg-panel/60 p-3"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold">{server.name}</p><p className="mt-1 text-[10px] font-mono text-faint">{server.hostname}</p></div><StatusBadge status={healthForMetric(server.latestMetric, data.thresholds)} /></div><div className="mt-3 grid grid-cols-3 gap-2 text-[10px] font-mono text-dim"><span>CPU<br /><strong className="text-ink">{Math.round(server.latestMetric?.cpu_usage ?? 0)}%</strong></span><span>MEM<br /><strong className="text-ink">{Math.round(server.latestMetric?.memory_usage ?? 0)}%</strong></span><span>DISK<br /><strong className="text-ink">{Math.round(server.latestMetric?.disk_usage ?? 0)}%</strong></span></div></div>)}</div></Panel></div></AppShell>;
+}
